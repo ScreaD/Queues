@@ -70,11 +70,15 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
     @Override
     public boolean offer(E e) {
         if (e == null) throw new NullPointerException();
+        insertItem(e);
+        return true;
+    }
+
+    protected void insertItem(E e) {
         if (currentSize >= capacity) poll();
         items[putIndex] = e;
         putIndex = increment(putIndex);
         ++currentSize;
-        return true;
     }
 
     /**
@@ -103,7 +107,7 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
      */
     @Override
     public E peek() {
-        if (takeIndex < 0)
+        if (currentSize == 0)
             return null;
         return items[takeIndex];
     }
