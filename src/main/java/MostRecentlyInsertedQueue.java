@@ -112,7 +112,7 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
         return items[takeIndex];
     }
 
-    final int increment(int i) {
+    private int increment(int i) {
         return (++i == items.length) ? 0 : i;
     }
 
