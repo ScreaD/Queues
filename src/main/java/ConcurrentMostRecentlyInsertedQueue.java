@@ -35,7 +35,7 @@ public class ConcurrentMostRecentlyInsertedQueue<E> extends MostRecentlyInserted
     }
 
     @Override
-    public synchronized boolean addAll(Collection<? extends E> c) {
+    public synchronized boolean addAll(Collection<? extends E> c) { // TODO: can use synchronized offer
         return queue.addAll(c);
     }
 

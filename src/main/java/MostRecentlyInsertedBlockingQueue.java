@@ -175,9 +175,15 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         }
     }
 
+    /**
+     * Returns the number of additional elements that this queue can ideally (in the absence of memory or
+     * resource constraints) accept without blocking, or Integer.MAX_VALUE if there is no intrinsic limit.
+     *
+     * @return the remaining capacity
+     */
     @Override
-    public int remainingCapacity() { // TODO: think about it
-        return capacity;
+    public int remainingCapacity() {
+        return Integer.MAX_VALUE;
     }
 
     @Override
