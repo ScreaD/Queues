@@ -111,7 +111,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
     }
 
     @Override
-    public boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException { // TODO
+    public boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException {
         if (e == null) throw new NullPointerException();
         long nanos = unit.toNanos(timeout);
         final ReentrantLock lock = this.lock;
