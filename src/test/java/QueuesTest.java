@@ -3,11 +3,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Queue;
+
+import static org.junit.Assert.*;
 
 public abstract class QueuesTest {
 
@@ -18,7 +18,7 @@ public abstract class QueuesTest {
     abstract Queue<Integer> initQueue(int capacity);
 
     @Rule
-    private ExpectedException exception = ExpectedException.none();
+    public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -65,14 +65,17 @@ public abstract class QueuesTest {
     @Test
     public void shouldBeAddedValue_whenSizeEqualsCapacity() {
         // fulfill the queue
-        for (int i = 0; i < DEFAULT_CAPACITY; i++) {
+        int startIndex = 0;
+        for (int i = startIndex; i < DEFAULT_CAPACITY; i++) {
             queue.offer(i);
         }
 
-        Integer addedItem = DEFAULT_CAPACITY + 1;
+        // when
+        assertTrue(queue.offer(DEFAULT_CAPACITY + 1));
 
-        assertTrue(queue.offer(addedItem));
-        assertEquals(queue.peek(), addedItem);
+        // then
+        Integer newHead = ++startIndex;
+        assertEquals(queue.peek(), newHead);
     }
 
     @Test
@@ -116,6 +119,35 @@ public abstract class QueuesTest {
         assertNull(queue.poll());
     }
 
+    @Test
+    public void shouldThrownNoSuchElementException_whenGettingNextOnEmptyQueue() {
+        exception.expect(NoSuchElementException.class);
+        queue.iterator().next();
+    }
 
+    @Test
+    public void shouldReturnFalse_whenHasNextOnEmpty() {
+        assertFalse(queue.iterator().hasNext());
+    }
 
+    @Test
+    public void shouldReturnTrue_whenQueueIsNotEmpty() {
+        queue.offer(1);
+
+        assertTrue(queue.iterator().hasNext());
+    }
+
+    @Test
+    public void shouldIteratorReturnItems_whenQueueIsNotEmpty() {
+        // given
+        Integer[] items = new Integer[] {1, 2, 3};
+        for (Integer item : items) {
+            queue.offer(item);
+        }
+
+        Iterator<Integer> iter = queue.iterator();
+        for (Integer item: items) {
+            assertEquals(iter.next(), item);
+        }
+    }
 }

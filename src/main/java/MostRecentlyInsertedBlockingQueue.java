@@ -229,7 +229,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         try {
             return new Iterator<E>() {
                 private int lastReturnedIndex = -1;
-                private int nextIndex = takeIndex;
+                private int nextIndex = (currentSize == 0) ? -1 : takeIndex;
                 private E nextItem;
 
                 @Override

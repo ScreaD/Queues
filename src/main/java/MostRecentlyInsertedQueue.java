@@ -60,7 +60,7 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
     @Override
     public Iterator<E> iterator() {
         return new Iterator<E>() {
-            private int nextIndex = takeIndex;
+            private int nextIndex = (currentSize == 0) ? -1 : takeIndex;
             private int lastReturnedIndex = -1;
             private E nextItem;
 
