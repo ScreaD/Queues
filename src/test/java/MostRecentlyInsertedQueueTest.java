@@ -6,4 +6,6 @@ public class MostRecentlyInsertedQueueTest extends QueuesTest {
     Queue<Integer> initQueue(int capacity) {
         return new MostRecentlyInsertedQueue<>(capacity);
     }
+
+
 }
