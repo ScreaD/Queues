@@ -62,6 +62,7 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
         return new Iterator<E>() {
             private int nextIndex = takeIndex;
             private int lastReturnedIndex = -1;
+            private E nextItem;
 
             @Override
             public boolean hasNext() {
@@ -72,8 +73,21 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
             public E next() {
                 if (!hasNext()) throw new NoSuchElementException();
                 lastReturnedIndex = nextIndex;
+                E result = items[lastReturnedIndex];
                 nextIndex = increment(nextIndex);
-                return items[lastReturnedIndex];
+                checkNext();
+                return result;
+            }
+
+            private void checkNext() {
+                if (nextIndex == putIndex) {
+                    nextIndex = -1;
+                    nextItem = null;
+                } else {
+                    nextItem = items[nextIndex];
+                    if (nextItem == null)
+                        nextIndex = -1;
+                }
             }
         };
     }

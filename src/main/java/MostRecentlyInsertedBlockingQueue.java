@@ -230,6 +230,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
             return new Iterator<E>() {
                 private int lastReturnedIndex = -1;
                 private int nextIndex = takeIndex;
+                private E nextItem;
 
                 @Override
                 public boolean hasNext() {
@@ -240,13 +241,27 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
                 public E next() {
                     if (!hasNext()) throw new NoSuchElementException();
                     lastReturnedIndex = nextIndex;
+                    E result = items[lastReturnedIndex];
                     nextIndex = increment(nextIndex);
-                    return items[lastReturnedIndex];
+                    checkNext();
+                    return result;
+                }
+
+                private void checkNext() {
+                    if (nextIndex == putIndex) {
+                        nextItem = null;
+                        nextIndex = -1;
+                    } else {
+                        nextItem = items[nextIndex];
+                        if (nextItem == null)
+                            nextIndex = -1;
+                    }
                 }
             };
         } finally {
             lock.unlock();
         }
+
     }
 
     @Override
