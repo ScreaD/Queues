@@ -226,7 +226,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
-            while (poll() != null);
+            while (poll() != null) ;
         } finally {
             lock.unlock();
         }
@@ -260,27 +260,20 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
         try {
-           for (;;) {
-               if (currentSize != items.length) {
-                   insertItem(e);
-                   return true;
-               }
-               if (nanos <= 0)
-                   return false;
-           }
+            for (; ; ) {
+                if (currentSize != items.length) {
+                    insertItem(e);
+                    return true;
+                }
+                if (nanos <= 0)
+                    return false;
+            }
         } finally {
-           lock.unlock();
+            lock.unlock();
         }
     }
 
-    /**
-     * Retrieves and removes the head of this queue, waiting if necessary
-     * until an element becomes available.
-     *
-     * @return the head of this queue
-     * @throws InterruptedException if interrupted while waiting
-     */
-       public E take() throws InterruptedException {
+    public E take() throws InterruptedException {
         final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
         try {

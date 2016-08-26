@@ -119,7 +119,7 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < items.length; i++) {
+        for (int i = 0; i < items.length; i++) {
             sb.append(items[i]).append(" ");
         }
         return sb.toString();
