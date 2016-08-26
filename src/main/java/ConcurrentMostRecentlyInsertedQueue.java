@@ -30,13 +30,13 @@ public class ConcurrentMostRecentlyInsertedQueue<E> extends MostRecentlyInserted
     }
 
     @Override
-    public synchronized int size() {
-        return queue.size();
+    public synchronized Iterator<E> iterator() {
+        return queue.iterator();
     }
 
     @Override
-    public synchronized Iterator<E> iterator() {
-        return queue.iterator();
+    public synchronized boolean addAll(Collection<? extends E> c) {
+        return queue.addAll(c);
     }
 
     @Override
@@ -45,8 +45,8 @@ public class ConcurrentMostRecentlyInsertedQueue<E> extends MostRecentlyInserted
     }
 
     @Override
-    public synchronized boolean addAll(Collection<? extends E> c) {
-        return queue.addAll(c);
+    public synchronized int size() {
+        return queue.size();
     }
 
 }

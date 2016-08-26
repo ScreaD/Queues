@@ -5,9 +5,13 @@ import java.util.NoSuchElementException;
 public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
 
     private final int capacity;
+
     private int currentSize;
+
     private final E[] items;
+
     private int takeIndex;
+
     private int putIndex;
 
     public MostRecentlyInsertedQueue(int capacity) {
@@ -16,30 +20,8 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
         this.capacity = capacity;
     }
 
-    @Override
-    public Iterator<E> iterator() {
-        return new Iterator<E>() {
-            private int nextIndex = takeIndex;
-            private int lastReturnedIndex = -1;
-
-            @Override
-            public boolean hasNext() {
-                return nextIndex >= 0;
-            }
-
-            @Override
-            public E next() {
-                if (!hasNext()) throw new NoSuchElementException();
-                lastReturnedIndex = nextIndex;
-                nextIndex = increment(nextIndex);
-                return items[lastReturnedIndex];
-            }
-        };
-    }
-
-    @Override
-    public int size() {
-        return currentSize;
+    private int increment(int i) {
+        return (++i == items.length) ? 0 : i;
     }
 
     @Override
@@ -75,8 +57,30 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
         return items[takeIndex];
     }
 
-    private int increment(int i) {
-        return (++i == items.length) ? 0 : i;
+    @Override
+    public Iterator<E> iterator() {
+        return new Iterator<E>() {
+            private int nextIndex = takeIndex;
+            private int lastReturnedIndex = -1;
+
+            @Override
+            public boolean hasNext() {
+                return nextIndex >= 0;
+            }
+
+            @Override
+            public E next() {
+                if (!hasNext()) throw new NoSuchElementException();
+                lastReturnedIndex = nextIndex;
+                nextIndex = increment(nextIndex);
+                return items[lastReturnedIndex];
+            }
+        };
+    }
+
+    @Override
+    public int size() {
+        return currentSize;
     }
 
     @Override
