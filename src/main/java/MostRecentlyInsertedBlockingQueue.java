@@ -35,6 +35,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         return (++i == items.length) ? 0 : i;
     }
 
+    @Override
     public int drainTo(Collection<? super E> c) {
         if (c == null) throw new NullPointerException();
         if (c == this) throw new IllegalArgumentException();
@@ -56,6 +57,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         }
     }
 
+    @Override
     public int drainTo(Collection<? super E> c, int maxElements) {
         if (c == null) throw new NullPointerException();
         if (c == this) throw new IllegalArgumentException();
@@ -95,6 +97,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         notEmpty.signal();
     }
 
+    @Override
     public boolean offer(E e) {
         if (e == null) throw new NullPointerException();
         final ReentrantLock lock = this.lock;
@@ -107,6 +110,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         }
     }
 
+    @Override
     public boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException { // TODO
         if (e == null) throw new NullPointerException();
         long nanos = unit.toNanos(timeout);
@@ -135,6 +139,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         return result;
     }
 
+    @Override
     public E poll() {
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -147,6 +152,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         }
     }
 
+    @Override
     public E poll(long timeout, TimeUnit unit) throws InterruptedException {
         long nanos = unit.toNanos(timeout);
         final ReentrantLock lock = this.lock;
@@ -169,10 +175,12 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         }
     }
 
+    @Override
     public int remainingCapacity() { // TODO: think about it
         return capacity;
     }
 
+    @Override
     public E peek() {
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -185,10 +193,12 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         }
     }
 
+    @Override
     public void put(E e) {
         offer(e);
     }
 
+    @Override
     public E take() throws InterruptedException {
         final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
