@@ -44,8 +44,7 @@ public class ConcurrentMostRecentlyInsertedQueue<E> extends MostRecentlyInserted
 
     @Override
     public synchronized void clear() {
-        while (queue.poll() != null)
-            ;
+        while (queue.poll() != null);
     }
 
     @Override
