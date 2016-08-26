@@ -1,9 +1,6 @@
 import java.util.Collection;
 import java.util.Iterator;
 
-/**
- * Created by scread on 25.08.16.
- */
 public class ConcurrentMostRecentlyInsertedQueue<E> extends MostRecentlyInsertedQueue<E> {
 
     private final MostRecentlyInsertedQueue<E> queue;
@@ -52,9 +49,4 @@ public class ConcurrentMostRecentlyInsertedQueue<E> extends MostRecentlyInserted
         return queue.addAll(c);
     }
 
-    // TODO: think about necessarily of this synchronization + remove
-//    @Override
-//    public synchronized boolean add(E e) {
-//        return queue.add(e);
-//    }
 }

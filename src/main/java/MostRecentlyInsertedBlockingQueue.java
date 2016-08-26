@@ -7,9 +7,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Created by scread on 26.08.16.
- */
 public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> implements BlockingQueue<E> {
 
     private final int capacity;
@@ -28,11 +25,6 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         notEmpty = lock.newCondition();
     }
 
-    /**
-     * Returns an iterator over the elements contained in this collection.
-     *
-     * @return an iterator over the elements contained in this collection
-     */
     @Override
     public Iterator<E> iterator() {
         final ReentrantLock lock = this.lock;
@@ -186,29 +178,10 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         }
     }
 
-    /**
-     * Returns the number of additional elements that this queue can ideally
-     * (in the absence of memory or resource constraints) accept without
-     * blocking, or {@code Integer.MAX_VALUE} if there is no intrinsic
-     * limit.
-     * <p>
-     * <p>Note that you <em>cannot</em> always tell if an attempt to insert
-     * an element will succeed by inspecting {@code remainingCapacity}
-     * because it may be the case that another thread is about to
-     * insert or remove an element.
-     *
-     * @return the remaining capacity
-     */
     public int remainingCapacity() { // TODO: think about it
         return capacity;
     }
 
-    /**
-     * Retrieves, but does not remove, the head of this queue,
-     * or returns {@code null} if this queue is empty.
-     *
-     * @return the head of this queue, or {@code null} if this queue is empty
-     */
     public E peek() {
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -236,24 +209,6 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         offer(e);
     }
 
-    /**
-     * Inserts the specified element into this queue, waiting up to the
-     * specified wait time if necessary for space to become available.
-     *
-     * @param e       the element to add
-     * @param timeout how long to wait before giving up, in units of
-     *                {@code unit}
-     * @param unit    a {@code TimeUnit} determining how to interpret the
-     *                {@code timeout} parameter
-     * @return {@code true} if successful, or {@code false} if
-     * the specified waiting time elapses before space is available
-     * @throws InterruptedException     if interrupted while waiting
-     * @throws ClassCastException       if the class of the specified element
-     *                                  prevents it from being added to this queue
-     * @throws NullPointerException     if the specified element is null
-     * @throws IllegalArgumentException if some property of the specified
-     *                                  element prevents it from being added to this queue
-     */
     public boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException { // TODO
         if (e == null) throw new NullPointerException();
         long nanos = unit.toNanos(timeout);
