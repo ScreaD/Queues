@@ -49,7 +49,6 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
     public E poll() {
         if (currentSize == 0)
             return null;
-        final E[] items = this.items;
         E x = items[takeIndex];
         items[takeIndex] = null;
         takeIndex = getRealIndex(takeIndex);
