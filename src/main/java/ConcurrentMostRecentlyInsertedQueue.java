@@ -7,7 +7,7 @@ public class ConcurrentMostRecentlyInsertedQueue<E> extends MostRecentlyInserted
 
     public ConcurrentMostRecentlyInsertedQueue(int capacity) {
         super(capacity);
-        this.queue = new MostRecentlyInsertedQueue<>(capacity);
+        this.queue = new MostRecentlyInsertedQueue<E>(capacity);
     }
 
     @Override

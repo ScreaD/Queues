@@ -23,6 +23,8 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
 
     private final Condition notEmpty;
 
+    public static final int DEFAULT_CAPACITY = 10;
+
     public MostRecentlyInsertedBlockingQueue(int capacity) {
         if (capacity <= 0) throw new IllegalArgumentException("Queue cant be lower than zero");
         this.items = (E[]) new Object[capacity];
@@ -31,7 +33,14 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         notEmpty = lock.newCondition();
     }
 
-    private int increment(int i) {
+    public MostRecentlyInsertedBlockingQueue() {
+        this.items = (E[]) new Object[DEFAULT_CAPACITY];
+        this.capacity = DEFAULT_CAPACITY;
+        lock = new ReentrantLock();
+        notEmpty = lock.newCondition();
+    }
+
+    private int getRealIndex(int i) {
         return (++i == items.length) ? 0 : i;
     }
 
@@ -49,7 +58,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
             while (transferred < size) {
                 c.add(items[takeIndex]);
                 items[takeIndex] = null;
-                takeIndex = increment(takeIndex);
+                takeIndex = getRealIndex(takeIndex);
                 ++transferred;
             }
             if (transferred > 0) {
@@ -78,7 +87,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
             while (transferred < max) {
                 c.add(items[takeIndex]);
                 items[takeIndex] = null;
-                takeIndex = increment(takeIndex);
+                takeIndex = getRealIndex(takeIndex);
                 ++transferred;
             }
             if (transferred > 0) {
@@ -94,7 +103,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
     private void insertItem(E e) {
         if (currentSize >= capacity) poll();
         items[putIndex] = e;
-        putIndex = increment(putIndex);
+        putIndex = getRealIndex(putIndex);
         ++currentSize;
         notEmpty.signal();
     }
@@ -137,7 +146,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         E result = items[takeIndex];
         items[takeIndex] = null;
         --currentSize;
-        takeIndex = increment(takeIndex);
+        takeIndex = getRealIndex(takeIndex);
         return result;
     }
 
@@ -244,9 +253,31 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
                     if (!hasNext()) throw new NoSuchElementException();
                     lastReturnedIndex = nextIndex;
                     E result = items[lastReturnedIndex];
-                    nextIndex = increment(nextIndex);
+                    nextIndex = getRealIndex(nextIndex);
                     checkNext();
                     return result;
+                }
+
+                /**
+                 * Removes from the underlying collection the last element returned
+                 * by this iterator (optional operation).  This method can be called
+                 * only once per call to {@link #next}.  The behavior of an iterator
+                 * is unspecified if the underlying collection is modified while the
+                 * iteration is in progress in any way other than by calling this
+                 * method.
+                 *
+                 * @throws UnsupportedOperationException if the {@code remove}
+                 *                                       operation is not supported by this iterator
+                 * @throws IllegalStateException         if the {@code next} method has not
+                 *                                       yet been called, or the {@code remove} method has already
+                 *                                       been called after the last call to the {@code next}
+                 *                                       method
+                 * @implSpec The default implementation throws an instance of
+                 * {@link UnsupportedOperationException} and performs no other action.
+                 */
+                @Override
+                public void remove() { // TODO: init this
+
                 }
 
                 private void checkNext() {
@@ -278,7 +309,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
             while (index++ < currentSize) {
                 if (o.equals(items[takeIndex]))
                     return true;
-                takeIndex = increment(takeIndex);
+                takeIndex = getRealIndex(takeIndex);
             }
             return false;
         } finally {
