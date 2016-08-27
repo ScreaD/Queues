@@ -1,6 +1,8 @@
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 
@@ -54,6 +56,18 @@ public class ConcurrentMostRecentlyInsertedQueueTest extends QueuesTest {
 
         Thread.sleep(SLEEP_TIME);
         assertEquals(q.size(), 1);
+    }
+
+    @Test
+    public void shouldBeAddedAddItems_whenAllItems() {
+        List<Integer> collection = new ArrayList<>(10);
+        for (int i = 0; i < NUMBER_ITEMS; i++) {
+            collection.add(i);
+        }
+
+        q.addAll(collection);
+
+        assertEquals(q.size(), NUMBER_ITEMS);
     }
 
     private void fillQueue() throws InterruptedException {

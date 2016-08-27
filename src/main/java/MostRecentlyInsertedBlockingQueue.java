@@ -41,11 +41,17 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         if (c == this) throw new IllegalArgumentException();
         final E[] items = this.items;
         final ReentrantLock lock = this.lock;
+        lock.lock();
         try {
             int takeIndex = this.takeIndex;
             int transferred = 0;
             int size = currentSize;
-            transferred = transfer(c, items, takeIndex, transferred, size);
+            while (transferred < size) {
+                c.add(items[takeIndex]);
+                items[takeIndex] = null;
+                takeIndex = increment(takeIndex);
+                ++transferred;
+            }
             if (transferred > 0) {
                 this.currentSize = 0;
                 this.takeIndex = 0;
@@ -58,17 +64,23 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
     }
 
     @Override
-    public int drainTo(Collection<? super E> c, int maxElements) {
+    public int drainTo(Collection<? super E> c, int maxItems) {
         if (c == null) throw new NullPointerException();
         if (c == this) throw new IllegalArgumentException();
-        if (maxElements <= 0) return 0;
+        if (maxItems <= 0) return 0;
         final E[] items = this.items;
         final ReentrantLock lock = this.lock;
+        lock.lock();
         try {
             int takeIndex = this.takeIndex;
             int transferred = 0;
-            int max = (maxElements < currentSize) ? maxElements : currentSize;
-            transferred = transfer(c, items, takeIndex, transferred, max);
+            int max = (maxItems < currentSize) ? maxItems : currentSize;
+            while (transferred < max) {
+                c.add(items[takeIndex]);
+                items[takeIndex] = null;
+                takeIndex = increment(takeIndex);
+                ++transferred;
+            }
             if (transferred > 0) {
                 this.currentSize -= transferred;
                 this.takeIndex = takeIndex;
@@ -77,16 +89,6 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         } finally {
             lock.unlock();
         }
-    }
-
-    private int transfer(Collection<? super E> c, E[] items, int takeIndex, int transferred, int size) {
-        if (transferred < size) {
-            c.add(items[takeIndex]);
-            items[takeIndex] = null;
-            takeIndex = increment(takeIndex);
-            ++transferred;
-        }
-        return transferred;
     }
 
     private void insertItem(E e) {
@@ -276,7 +278,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
             while (index++ < currentSize) {
                 if (o.equals(items[takeIndex]))
                     return true;
-                index = increment(takeIndex);
+                takeIndex = increment(takeIndex);
             }
             return false;
         } finally {

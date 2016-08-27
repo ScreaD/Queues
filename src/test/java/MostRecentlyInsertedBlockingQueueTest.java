@@ -1,15 +1,11 @@
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
 
@@ -21,10 +17,7 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
 
     private final static int SLEEP_TIME = 50;
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
-    MostRecentlyInsertedBlockingQueue<Integer> q;
+    MostRecentlyInsertedBlockingQueue<Integer> intQueue;
 
     @Override
     Queue<Integer> initQueue(int capacity) {
@@ -33,24 +26,28 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
 
     @Before
     public void createQueue() {
-        q = new MostRecentlyInsertedBlockingQueue<>(CAPACITY);
+        intQueue = new MostRecentlyInsertedBlockingQueue<>(CAPACITY);
     }
 
     @Test
     public void shouldNPE_whenDrainNull() {
         exception.expect(NullPointerException.class);
-        q.drainTo(null);
-
-        exception.expect(NullPointerException.class);
-        q.drainTo(null, 0);
+        intQueue.drainTo(null);
     }
+
+    @Test
+    public void shouldNPE_whenDrainMaxItemsWithNull() {
+        exception.expect(NullPointerException.class);
+        intQueue.drainTo(null, 1);
+    }
+
 
     @Test
     public void shouldCorrectlyAddedAllItems_whenThreadsOfferItems() throws InterruptedException {
         fillQueue();
 
         Thread.sleep(SLEEP_TIME);
-        assertEquals(q.size(), THREADS_NUMBERS * NUMBER_ITEMS);
+        assertEquals(intQueue.size(), THREADS_NUMBERS * NUMBER_ITEMS);
     }
 
     @Test
@@ -58,25 +55,26 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
         fillQueue();
 
         Integer additionalItem = new Random().nextInt();
-        q.offer(additionalItem);
-        int expectingSize = THREADS_NUMBERS * NUMBER_ITEMS + 1;
+        intQueue.offer(additionalItem);
+        int initialSize = THREADS_NUMBERS * NUMBER_ITEMS + 1;
+        int expectedSize = 1;
 
-        assertEquals(q.size(), expectingSize);
+        assertEquals(intQueue.size(), initialSize);
 
         for (int i = 0; i < THREADS_NUMBERS; i++) {
             new Thread(() -> {
-                for (int j = 0; j < NUMBER_ITEMS; j++) q.poll();
+                for (int j = 0; j < NUMBER_ITEMS; j++) intQueue.poll();
             }).start();
         }
 
         Thread.sleep(SLEEP_TIME);
-        assertEquals(q.size(), 1);
+        assertEquals(intQueue.size(), expectedSize);
     }
 
     private void fillQueue() throws InterruptedException {
         for (int i = 0; i < THREADS_NUMBERS; i++) {
             new Thread(() -> {
-                for (int j = 0; j < NUMBER_ITEMS; j++) q.offer(j);
+                for (int j = 0; j < NUMBER_ITEMS; j++) intQueue.offer(j);
             }).start();
         }
         Thread.sleep(SLEEP_TIME);
@@ -88,7 +86,7 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
 
         Thread thread = new Thread(() -> {
             try {
-                q.take();
+                intQueue.take();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -103,7 +101,7 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
     public void shouldQueueBlocks_whenPollWithTimeoutOnEmpty() throws InterruptedException {
         Thread thread = new Thread(() -> {
             try {
-                q.poll(200, TimeUnit.MILLISECONDS);
+                intQueue.poll(SLEEP_TIME * 2, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -120,7 +118,7 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
 
         Thread thread = new Thread(() -> {
             try {
-                assertEquals(expectedItem, q.take());
+                assertEquals(expectedItem, intQueue.take());
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -129,23 +127,44 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
         thread.start();
 
         Thread.sleep(SLEEP_TIME);
-        q.put(expectedItem);
-        assertEquals(1, q.size());
+        intQueue.put(expectedItem);
+        assertEquals(1, intQueue.size());
 
         Thread.sleep(SLEEP_TIME);
-        assertEquals(0, q.size());
+        assertEquals(0, intQueue.size());
     }
 
-//    @Test // TODO: test DrainTo
-//    public void shouldIllegalArgumentException_whenDrainSameCollection() {
-//        List<Integer> collection = new ArrayList<>();
-//        q.drainTo(collection);
-//
-//        exception.expect(IllegalArgumentException.class);
-//        q.drainTo(collection);
-//
-//        exception.expect(IllegalArgumentException.class);
-//        q.drainTo(collection, 1);
-//    }
+    @Test
+    public void shouldIllegalArgumentException_whenDrainSameCollection() {
+        intQueue.put(new Random().nextInt());
+
+        exception.expect(IllegalArgumentException.class);
+        intQueue.drainTo(intQueue);
+    }
+
+    @Test
+    public void shouldIllegalArgumentException_whenDrainWithMaxItemsOnSameCollection() {
+        intQueue.put(new Random().nextInt());
+
+        exception.expect(IllegalArgumentException.class);
+        intQueue.drainTo(intQueue, 1);
+    }
+
+    @Test
+    public void shouldFalse_whenContainsOnNull() {
+        assertFalse(intQueue.contains(null));
+    }
+
+    @Test
+    public void shouldTrue_whenQueueContainsItem() {
+        Random random = new Random();
+        Integer expected = random.nextInt();
+
+        intQueue.put(random.nextInt());
+        intQueue.put(random.nextInt());
+        intQueue.put(expected);
+
+        assertTrue(intQueue.contains(expected));
+    }
 
 }
