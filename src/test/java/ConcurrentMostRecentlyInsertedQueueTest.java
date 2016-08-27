@@ -11,11 +11,8 @@ import static org.junit.Assert.assertEquals;
 public class ConcurrentMostRecentlyInsertedQueueTest extends QueuesTest {
 
     private final static int THREADS_NUMBERS = 20;
-
     private final static int NUMBER_ITEMS = 100;
-
     private final static int CAPACITY = THREADS_NUMBERS * NUMBER_ITEMS * 2;
-
     private final static int SLEEP_TIME = 50;
 
     private Queue<Integer> concurrentQueue;
@@ -43,14 +40,17 @@ public class ConcurrentMostRecentlyInsertedQueueTest extends QueuesTest {
         fillQueue();
 
         Integer additionalItem = new Random().nextInt();
-        concurrentQueue.offer(additionalItem);
         int expectingSize = THREADS_NUMBERS * NUMBER_ITEMS + 1;
+        concurrentQueue.offer(additionalItem);
 
         assertEquals(concurrentQueue.size(), expectingSize);
 
         for (int i = 0; i < THREADS_NUMBERS; i++) {
-            new Thread(() -> {
-                for (int j = 0; j < NUMBER_ITEMS; j++) concurrentQueue.poll();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < NUMBER_ITEMS; j++) concurrentQueue.poll();
+                }
             }).start();
         }
 
@@ -72,8 +72,11 @@ public class ConcurrentMostRecentlyInsertedQueueTest extends QueuesTest {
 
     private void fillQueue() throws InterruptedException {
         for (int i = 0; i < THREADS_NUMBERS; i++) {
-            new Thread(() -> {
-                for (int j = 0; j < NUMBER_ITEMS; j++) concurrentQueue.offer(j);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < NUMBER_ITEMS; j++) concurrentQueue.offer(j);
+                }
             }).start();
         }
         Thread.sleep(SLEEP_TIME);

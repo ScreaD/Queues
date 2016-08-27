@@ -10,11 +10,8 @@ import static org.junit.Assert.*;
 public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
 
     private final static int THREADS_NUMBERS = 20;
-
     private final static int NUMBER_ITEMS = 100;
-
     private final static int CAPACITY = THREADS_NUMBERS * NUMBER_ITEMS * 2;
-
     private final static int SLEEP_TIME = 50;
 
     private MostRecentlyInsertedBlockingQueue<Integer> blockingQueue;
@@ -62,8 +59,11 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
         assertEquals(blockingQueue.size(), initialSize);
 
         for (int i = 0; i < THREADS_NUMBERS; i++) {
-            new Thread(() -> {
-                for (int j = 0; j < NUMBER_ITEMS; j++) blockingQueue.poll();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < NUMBER_ITEMS; j++) blockingQueue.poll();
+                }
             }).start();
         }
 
@@ -73,8 +73,11 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
 
     private void fillQueue() throws InterruptedException {
         for (int i = 0; i < THREADS_NUMBERS; i++) {
-            new Thread(() -> {
-                for (int j = 0; j < NUMBER_ITEMS; j++) blockingQueue.offer(j);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < NUMBER_ITEMS; j++) blockingQueue.offer(j);
+                }
             }).start();
         }
         Thread.sleep(SLEEP_TIME);
@@ -82,12 +85,14 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
 
     @Test
     public void shouldQueueBlocks_whenTakeOnEmptyQueue() throws InterruptedException {
-
-        Thread thread = new Thread(() -> {
-            try {
-                blockingQueue.take();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    blockingQueue.take();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -98,11 +103,14 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
 
     @Test
     public void shouldQueueBlocks_whenPollWithTimeoutOnEmpty() throws InterruptedException {
-        Thread thread = new Thread(() -> {
-            try {
-                blockingQueue.poll(SLEEP_TIME * 2, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    blockingQueue.poll(SLEEP_TIME * 2, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -113,13 +121,16 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
 
     @Test
     public void shouldTakeItem_whenQueueBecomesNotEmpty() throws InterruptedException {
-        Integer expectedItem = new Random().nextInt();
+        final Integer expectedItem = new Random().nextInt();
 
-        Thread thread = new Thread(() -> {
-            try {
-                assertEquals(expectedItem, blockingQueue.take());
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    assertEquals(expectedItem, blockingQueue.take());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 

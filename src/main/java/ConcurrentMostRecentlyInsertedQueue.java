@@ -12,7 +12,10 @@ public class ConcurrentMostRecentlyInsertedQueue<E> extends MostRecentlyInserted
 
     @Override
     public boolean offer(E e) {
-        if (e == null) throw new NullPointerException();
+        if (e == null) {
+            throw new NullPointerException();
+        }
+
         synchronized (this) {
             queue.insertItem(e);
             return true;

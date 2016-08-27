@@ -11,10 +11,9 @@ import static org.junit.Assert.*;
 
 public abstract class QueuesTest {
 
-    private Queue<Integer> queue;
-
     private final static int DEFAULT_CAPACITY = 5;
 
+    private Queue<Integer> queue;
     abstract Queue<Integer> initQueue(int capacity);
 
     @Rule
