@@ -17,7 +17,7 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
     private static final int DEFAULT_CAPACITY = 10;
 
     public MostRecentlyInsertedQueue(int capacity) {
-        if (capacity <= 0) throw new IllegalArgumentException("Queue cant be lower than zero");
+        if (capacity <= 0) throw new IllegalArgumentException("Size of queue cant be lower than zero");
         this.items = (E[]) new Object[capacity];
         this.capacity = capacity;
     }

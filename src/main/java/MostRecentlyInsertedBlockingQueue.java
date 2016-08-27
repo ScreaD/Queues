@@ -26,7 +26,7 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
     public static final int DEFAULT_CAPACITY = 10;
 
     public MostRecentlyInsertedBlockingQueue(int capacity) {
-        if (capacity <= 0) throw new IllegalArgumentException("Queue cant be lower than zero");
+        if (capacity <= 0) throw new IllegalArgumentException("Size of queue cant be lower than zero");
         this.items = (E[]) new Object[capacity];
         this.capacity = capacity;
         lock = new ReentrantLock();
@@ -62,9 +62,9 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
                 ++transferred;
             }
             if (transferred > 0) {
-                this.currentSize = 0;
+                currentSize = 0;
+                putIndex = 0;
                 this.takeIndex = 0;
-                this.putIndex = 0;
             }
             return transferred;
         } finally {
