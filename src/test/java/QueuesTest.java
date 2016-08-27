@@ -26,7 +26,7 @@ public abstract class QueuesTest {
     }
 
     @Test
-    public void shouldThrownIllegalArgumentException_whenCapacityLowerZero() {
+    public void shouldThrowIllegalArgumentException_whenCapacityLowerZero() {
         exception.expect(IllegalArgumentException.class);
         queue = initQueue(-1);
     }
@@ -120,7 +120,7 @@ public abstract class QueuesTest {
     }
 
     @Test
-    public void shouldThrownNoSuchElementException_whenGettingNextOnEmptyQueue() {
+    public void shouldThrowNoSuchElementException_whenGettingNextOnEmptyQueue() {
         exception.expect(NoSuchElementException.class);
         queue.iterator().next();
     }

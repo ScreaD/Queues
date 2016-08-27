@@ -17,26 +17,26 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
 
     private final static int SLEEP_TIME = 50;
 
-    MostRecentlyInsertedBlockingQueue<Integer> blockingQueue;
+    private MostRecentlyInsertedBlockingQueue<Integer> blockingQueue;
 
     @Override
     Queue<Integer> initQueue(int capacity) {
-        return new MostRecentlyInsertedBlockingQueue<>(capacity);
+        return new MostRecentlyInsertedBlockingQueue<Integer>(capacity);
     }
 
     @Before
     public void createQueue() {
-        blockingQueue = new MostRecentlyInsertedBlockingQueue<>(CAPACITY);
+        blockingQueue = new MostRecentlyInsertedBlockingQueue<Integer>(CAPACITY);
     }
 
     @Test
-    public void shouldNPE_whenDrainNull() {
+    public void shouldThrowNPE_whenDrainNull() {
         exception.expect(NullPointerException.class);
         blockingQueue.drainTo(null);
     }
 
     @Test
-    public void shouldNPE_whenDrainMaxItemsWithNull() {
+    public void shouldThrowNPE_whenDrainMaxItemsWithNull() {
         exception.expect(NullPointerException.class);
         blockingQueue.drainTo(null, 1);
     }
@@ -80,7 +80,6 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
         Thread.sleep(SLEEP_TIME);
     }
 
-    //     public boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException {
     @Test
     public void shouldQueueBlocks_whenTakeOnEmptyQueue() throws InterruptedException {
 
@@ -135,7 +134,7 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
     }
 
     @Test
-    public void shouldIllegalArgumentException_whenDrainSameCollection() {
+    public void shouldThrowIllegalArgumentException_whenDrainSameCollection() {
         blockingQueue.put(new Random().nextInt());
 
         exception.expect(IllegalArgumentException.class);
@@ -143,7 +142,7 @@ public class MostRecentlyInsertedBlockingQueueTest extends QueuesTest {
     }
 
     @Test
-    public void shouldIllegalArgumentException_whenDrainWithMaxItemsOnSameCollection() {
+    public void shouldThrowIllegalArgumentException_whenDrainWithMaxItemsOnSameCollection() {
         blockingQueue.put(new Random().nextInt());
 
         exception.expect(IllegalArgumentException.class);
