@@ -18,7 +18,7 @@ public class ConcurrentMostRecentlyInsertedQueueTest extends QueuesTest {
 
     private final static int SLEEP_TIME = 50;
 
-    Queue<Integer> q;
+    private Queue<Integer> concurrentQueue;
 
     @Override
     Queue<Integer> initQueue(int capacity) {
@@ -27,7 +27,7 @@ public class ConcurrentMostRecentlyInsertedQueueTest extends QueuesTest {
 
     @Before
     public void createQueue() {
-        q = new ConcurrentMostRecentlyInsertedQueue<>(CAPACITY);
+        concurrentQueue = new ConcurrentMostRecentlyInsertedQueue<>(CAPACITY);
     }
 
     @Test
@@ -35,7 +35,7 @@ public class ConcurrentMostRecentlyInsertedQueueTest extends QueuesTest {
         fillQueue();
 
         Thread.sleep(SLEEP_TIME);
-        assertEquals(q.size(), THREADS_NUMBERS * NUMBER_ITEMS);
+        assertEquals(concurrentQueue.size(), THREADS_NUMBERS * NUMBER_ITEMS);
     }
 
     @Test
@@ -43,19 +43,19 @@ public class ConcurrentMostRecentlyInsertedQueueTest extends QueuesTest {
         fillQueue();
 
         Integer additionalItem = new Random().nextInt();
-        q.offer(additionalItem);
+        concurrentQueue.offer(additionalItem);
         int expectingSize = THREADS_NUMBERS * NUMBER_ITEMS + 1;
 
-        assertEquals(q.size(), expectingSize);
+        assertEquals(concurrentQueue.size(), expectingSize);
 
         for (int i = 0; i < THREADS_NUMBERS; i++) {
             new Thread(() -> {
-                for (int j = 0; j < NUMBER_ITEMS; j++) q.poll();
+                for (int j = 0; j < NUMBER_ITEMS; j++) concurrentQueue.poll();
             }).start();
         }
 
         Thread.sleep(SLEEP_TIME);
-        assertEquals(q.size(), 1);
+        assertEquals(concurrentQueue.size(), 1);
     }
 
     @Test
@@ -65,15 +65,15 @@ public class ConcurrentMostRecentlyInsertedQueueTest extends QueuesTest {
             collection.add(i);
         }
 
-        q.addAll(collection);
+        concurrentQueue.addAll(collection);
 
-        assertEquals(q.size(), NUMBER_ITEMS);
+        assertEquals(concurrentQueue.size(), NUMBER_ITEMS);
     }
 
     private void fillQueue() throws InterruptedException {
         for (int i = 0; i < THREADS_NUMBERS; i++) {
             new Thread(() -> {
-                for (int j = 0; j < NUMBER_ITEMS; j++) q.offer(j);
+                for (int j = 0; j < NUMBER_ITEMS; j++) concurrentQueue.offer(j);
             }).start();
         }
         Thread.sleep(SLEEP_TIME);
