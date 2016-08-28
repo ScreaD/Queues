@@ -1,5 +1,4 @@
 import java.util.Collection;
-import java.util.Iterator;
 
 public class ConcurrentMostRecentlyInsertedQueue<E> extends MostRecentlyInsertedQueue<E> {
 
@@ -33,18 +32,13 @@ public class ConcurrentMostRecentlyInsertedQueue<E> extends MostRecentlyInserted
     }
 
     @Override
-    public synchronized Iterator<E> iterator() {
-        return queue.iterator();
-    }
-
-    @Override
     public synchronized boolean addAll(Collection<? extends E> c) {
         return queue.addAll(c);
     }
 
     @Override
     public synchronized void clear() {
-        while (queue.poll() != null) ;
+        while (poll() != null) ;
     }
 
     @Override

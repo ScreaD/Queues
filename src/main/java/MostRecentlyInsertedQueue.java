@@ -49,11 +49,8 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
 
     @Override
     public E poll() {
-        if (currentSize == 0) {
-            return null;
-        }
-
         E x = items[takeIndex];
+
         items[takeIndex] = null;
         takeIndex = getRealIndex(takeIndex);
         --currentSize;
@@ -63,10 +60,6 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
 
     @Override
     public E peek() {
-        if (currentSize == 0) {
-            return null;
-        }
-        
         return items[takeIndex];
     }
 
@@ -85,11 +78,26 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
             @Override
             public E next() {
                 if (!hasNext()) throw new NoSuchElementException();
+
                 lastReturnedIndex = nextIndex;
                 E result = items[lastReturnedIndex];
                 nextIndex = getRealIndex(nextIndex);
                 checkNext();
+
                 return result;
+            }
+
+            @Override
+            public void remove() {
+                if (lastReturnedIndex == -1) {
+                    throw new IllegalStateException();
+                }
+
+                items[lastReturnedIndex] = null;
+                lastReturnedIndex = -1;
+                nextIndex = getRealIndex(nextIndex);
+
+                checkNext();
             }
 
             private void checkNext() {
@@ -98,8 +106,9 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
                     nextItem = null;
                 } else {
                     nextItem = items[nextIndex];
-                    if (nextItem == null)
+                    if (nextItem == null) {
                         nextIndex = -1;
+                    }
                 }
             }
         };

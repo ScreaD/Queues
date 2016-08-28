@@ -222,10 +222,6 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
 
         lock.lock();
         try {
-            if (currentSize == 0) {
-                return null;
-            }
-
             return items[takeIndex];
         } finally {
             lock.unlock();
@@ -257,49 +253,56 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         }
     }
 
+    // Must be manually synchronized by user
     @Override
     public Iterator<E> iterator() {
-        final ReentrantLock lock = this.lock;
+        return new Iterator<E>() {
+            private int lastReturnedIndex = -1;
+            private int nextIndex = (currentSize == 0) ? -1 : takeIndex;
+            private E nextItem;
 
-        lock.lock();
-        try {
-            return new Iterator<E>() {
-                private int lastReturnedIndex = -1;
-                private int nextIndex = (currentSize == 0) ? -1 : takeIndex;
-                private E nextItem;
-
-                @Override
-                public boolean hasNext() {
-                    return nextIndex >= 0;
+            @Override
+            public void remove() {
+                if (lastReturnedIndex == -1) {
+                    throw new IllegalStateException();
                 }
 
-                @Override
-                public E next() {
-                    if (!hasNext()) throw new NoSuchElementException();
+                items[lastReturnedIndex] = null;
+                lastReturnedIndex = -1;
+                nextIndex = getRealIndex(nextIndex);
 
-                    lastReturnedIndex = nextIndex;
-                    E result = items[lastReturnedIndex];
-                    nextIndex = getRealIndex(nextIndex);
-                    checkNext();
+                checkNext();
+            }
 
-                    return result;
-                }
+            @Override
+            public boolean hasNext() {
+                return nextIndex >= 0;
+            }
 
-                private void checkNext() {
-                    if (nextIndex == putIndex) {
-                        nextItem = null;
+            @Override
+            public E next() {
+                if (!hasNext()) throw new NoSuchElementException();
+
+                lastReturnedIndex = nextIndex;
+                E result = items[lastReturnedIndex];
+                nextIndex = getRealIndex(nextIndex);
+                checkNext();
+
+                return result;
+            }
+
+            private void checkNext() {
+                if (nextIndex == putIndex) {
+                    nextItem = null;
+                    nextIndex = -1;
+                } else {
+                    nextItem = items[nextIndex];
+                    if (nextItem == null) {
                         nextIndex = -1;
-                    } else {
-                        nextItem = items[nextIndex];
-                        if (nextItem == null)
-                            nextIndex = -1;
                     }
                 }
-            };
-        } finally {
-            lock.unlock();
-        }
-
+            }
+        };
     }
 
     @Override

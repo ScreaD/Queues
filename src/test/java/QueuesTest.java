@@ -14,6 +14,7 @@ public abstract class QueuesTest {
     private final static int DEFAULT_CAPACITY = 5;
 
     private Queue<Integer> queue;
+
     abstract Queue<Integer> initQueue(int capacity);
 
     @Rule
@@ -139,13 +140,13 @@ public abstract class QueuesTest {
     @Test
     public void shouldIteratorReturnItems_whenQueueIsNotEmpty() {
         // given
-        Integer[] items = new Integer[] {1, 2, 3};
+        Integer[] items = new Integer[]{1, 2, 3};
         for (Integer item : items) {
             queue.offer(item);
         }
 
         Iterator<Integer> iter = queue.iterator();
-        for (Integer item: items) {
+        for (Integer item : items) {
             assertEquals(iter.next(), item);
         }
     }
