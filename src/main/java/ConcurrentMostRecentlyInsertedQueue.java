@@ -2,11 +2,8 @@ import java.util.Collection;
 
 public class ConcurrentMostRecentlyInsertedQueue<E> extends MostRecentlyInsertedQueue<E> {
 
-    private final MostRecentlyInsertedQueue<E> queue;
-
     public ConcurrentMostRecentlyInsertedQueue(int capacity) {
         super(capacity);
-        this.queue = new MostRecentlyInsertedQueue<E>(capacity);
     }
 
     @Override
@@ -16,24 +13,24 @@ public class ConcurrentMostRecentlyInsertedQueue<E> extends MostRecentlyInserted
         }
 
         synchronized (this) {
-            queue.insertItem(e);
+            insertItem(e);
             return true;
         }
     }
 
     @Override
     public synchronized E poll() {
-        return queue.poll();
+        return super.poll();
     }
 
     @Override
     public synchronized E peek() {
-        return queue.peek();
+        return super.peek();
     }
 
     @Override
     public synchronized boolean addAll(Collection<? extends E> c) {
-        return queue.addAll(c);
+        return super.addAll(c);
     }
 
     @Override
@@ -43,7 +40,7 @@ public class ConcurrentMostRecentlyInsertedQueue<E> extends MostRecentlyInserted
 
     @Override
     public synchronized int size() {
-        return queue.size();
+        return super.size();
     }
 
 }

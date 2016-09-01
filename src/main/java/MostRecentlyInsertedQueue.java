@@ -49,6 +49,10 @@ public class MostRecentlyInsertedQueue<E> extends AbstractQueue<E> {
 
     @Override
     public E poll() {
+        if (currentSize == 0) {
+            return null;
+        }
+
         E x = items[takeIndex];
 
         items[takeIndex] = null;

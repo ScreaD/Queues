@@ -43,26 +43,15 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         if (c == null) throw new NullPointerException();
         if (c == this) throw new IllegalArgumentException();
 
-        final E[] items = this.items;
         final ReentrantLock lock = this.lock;
 
         lock.lock();
         try {
-            int takeIndex = this.takeIndex;
             int transferred = 0;
-            int size = currentSize;
 
-            while (transferred < size) {
-                c.add(items[takeIndex]);
-                items[takeIndex] = null;
-                takeIndex = getRealIndex(takeIndex);
+            while (currentSize != 0) {
+                c.add(poll());
                 ++transferred;
-            }
-
-            if (transferred > 0) {
-                currentSize = 0;
-                putIndex = 0;
-                this.takeIndex = 0;
             }
 
             return transferred;
@@ -77,25 +66,16 @@ public class MostRecentlyInsertedBlockingQueue<E> extends AbstractQueue<E> imple
         if (c == this) throw new IllegalArgumentException();
         if (maxItems <= 0) return 0;
 
-        final E[] items = this.items;
         final ReentrantLock lock = this.lock;
 
         lock.lock();
         try {
-            int takeIndex = this.takeIndex;
-            int transferred = 0;
             int max = (maxItems < currentSize) ? maxItems : currentSize;
+            int transferred = 0;
 
             while (transferred < max) {
-                c.add(items[takeIndex]);
-                items[takeIndex] = null;
-                takeIndex = getRealIndex(takeIndex);
+                c.add(poll());
                 ++transferred;
-            }
-
-            if (transferred > 0) {
-                this.currentSize -= transferred;
-                this.takeIndex = takeIndex;
             }
 
             return transferred;
